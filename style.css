@@ -385,8 +385,7 @@ a:focus-visible {
   font-weight: 900;
 }
 
-.sound-button,
-.question-sound {
+.sound-button {
   display: grid;
   width: 41px;
   height: 41px;
@@ -401,8 +400,7 @@ a:focus-visible {
   transition: transform 140ms ease;
 }
 
-.sound-button:hover,
-.question-sound:hover {
+.sound-button:hover {
   transform: translateY(-2px);
 }
 
@@ -445,8 +443,15 @@ a:focus-visible {
 }
 
 .quiz-view {
-  max-width: 720px;
-  margin: 0 auto;
+  margin: 0 0 16px;
+}
+
+.app-shell.is-quiz .learn-layout {
+  grid-template-columns: 1fr;
+}
+
+.app-shell.is-quiz .letter-detail {
+  display: none;
 }
 
 .quiz-card {
@@ -493,28 +498,52 @@ a:focus-visible {
   text-align: right;
 }
 
-.question-kana-wrap {
+.question-word-wrap {
   position: relative;
   display: flex;
-  min-height: 205px;
   align-items: center;
   justify-content: center;
-  margin: 4px auto 14px;
+  gap: clamp(16px, 5vw, 34px);
+  min-height: 145px;
+  margin: 5px auto 0;
 }
 
-.question-kana {
-  color: #ed806d;
+.question-emoji {
+  display: grid;
+  width: 91px;
+  height: 91px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 2px solid #f3e7cb;
+  border-radius: 25px;
+  background: #fff9e9;
+  font-size: 55px;
+}
+
+.word-slots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.word-slot {
+  display: grid;
+  width: clamp(38px, 8vw, 56px);
+  height: 58px;
+  place-items: center;
+  border: 2px solid #e9e3f5;
+  border-radius: 14px;
+  background: #fbfaff;
+  color: var(--purple-dark);
   font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
-  font-size: 148px;
+  font-size: 27px;
   font-weight: 900;
-  line-height: 1;
-  text-shadow: 0 6px 0 rgb(219 118 87 / 13%);
 }
 
-.question-sound {
-  position: absolute;
-  right: calc(50% - 105px);
-  bottom: 25px;
+.word-slot:not(:empty) {
+  border-color: #c8bdf4;
+  background: #f3efff;
 }
 
 .question-sparkle {
@@ -525,45 +554,11 @@ a:focus-visible {
   font-size: 24px;
 }
 
-.answer-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.answer-button {
-  min-height: 55px;
-  border: 2px solid #eee9f7;
-  border-radius: 16px;
-  background: #fcfbff;
-  color: #514b65;
-  cursor: pointer;
-  font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
-  font-size: 21px;
-  font-weight: 900;
-  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
-}
-
-.answer-button:not(:disabled):hover {
+.kana-button.is-answer-selected {
   transform: translateY(-2px);
-  border-color: #cfc5f8;
-  background: #f5f2ff;
-}
-
-.answer-button:disabled {
-  cursor: default;
-}
-
-.answer-button.is-correct {
   border-color: #75c89e;
   background: #e9f9f0;
   color: #34885c;
-}
-
-.answer-button.is-wrong {
-  border-color: #f3a2a6;
-  background: #fff0f0;
-  color: #cd6269;
 }
 
 .quiz-feedback {
@@ -695,12 +690,23 @@ a:focus-visible {
     font-size: 17px;
   }
 
-  .question-kana-wrap {
-    min-height: 184px;
+  .question-word-wrap {
+    min-height: 125px;
   }
 
-  .question-kana {
-    font-size: 130px;
+  .question-emoji {
+    width: 73px;
+    height: 73px;
+    border-radius: 20px;
+    font-size: 44px;
+  }
+
+  .word-slot {
+    height: 52px;
+  }
+
+  .word-slots {
+    gap: 5px;
   }
 }
 

@@ -69,8 +69,14 @@ const kanaRows = [
 
 const kana = kanaRows.flat();
 const kanaByCharacter = new Map(kana.map((item) => [item.kana, item]));
+const quizWords = kana.filter(({ word }) => {
+  const characters = Array.from(word);
+  return characters.length >= 2
+    && characters.length <= 5
+    && characters.every((character) => kanaByCharacter.has(character));
+});
+const appShell = document.querySelector(".app-shell");
 const kanaGrid = document.querySelector("#kana-grid");
-const learnView = document.querySelector("#learn-view");
 const quizView = document.querySelector("#quiz-view");
 const learnModeButton = document.querySelector("#learn-mode");
 const quizModeButton = document.querySelector("#quiz-mode");
@@ -85,9 +91,8 @@ const speakButton = document.querySelector("#speak-button");
 const letterPosition = document.querySelector("#letter-position");
 const previousButton = document.querySelector("#previous-button");
 const nextButton = document.querySelector("#next-button");
-const questionKana = document.querySelector("#question-kana");
-const questionSound = document.querySelector("#question-sound");
-const answerGrid = document.querySelector("#answer-grid");
+const questionEmoji = document.querySelector("#question-emoji");
+const wordSlots = document.querySelector("#word-slots");
 const quizFeedback = document.querySelector("#quiz-feedback");
 const nextQuestionButton = document.querySelector("#next-question");
 const questionCount = document.querySelector("#question-count");
@@ -97,9 +102,11 @@ const scoreDisplay = document.querySelector("#score");
 let selectedIndex = 0;
 let quizQuestions = [];
 let quizIndex = 0;
+let currentMode = "learn";
 let score = 0;
 let answered = false;
 let quizFinished = false;
+let currentAnswerIndex = 0;
 
 function speak(text) {
   if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) return;
@@ -172,47 +179,54 @@ function shuffle(items) {
 }
 
 function startQuiz() {
-  quizQuestions = shuffle(kana).slice(0, 10);
+  quizQuestions = shuffle(quizWords).slice(0, 10);
   quizIndex = 0;
   score = 0;
   quizFinished = false;
   scoreDisplay.textContent = score;
+  kanaGrid.querySelectorAll(".kana-button").forEach((button) => {
+    button.classList.remove("is-selected");
+    button.classList.remove("is-answer-selected");
+    button.setAttribute("aria-pressed", "false");
+    button.setAttribute("aria-pressed", "false");
+  });
   renderQuestion();
 }
 
 function renderQuestion() {
   answered = false;
+  currentAnswerIndex = 0;
   const question = quizQuestions[quizIndex];
-  questionKana.textContent = question.kana;
-  questionSound.setAttribute("aria-label", `${question.kana} のおとをきく`);
-  questionSound.classList.remove("is-hidden");
+  const characters = Array.from(question.word);
+  questionEmoji.textContent = question.emoji;
   questionCount.textContent = `${quizIndex + 1} / ${quizQuestions.length} もんめ`;
   quizProgress.style.width = `${((quizIndex + 1) / quizQuestions.length) * 100}%`;
-  quizFeedback.textContent = "こたえを えらんでね！";
+  quizFeedback.textContent = "えをみて、ひらがなを じゅんばんに おしてね！";
   quizFeedback.className = "quiz-feedback";
   nextQuestionButton.classList.add("is-hidden");
   nextQuestionButton.textContent = "つぎの もんだいへ →";
-  answerGrid.classList.remove("is-hidden");
-  answerGrid.replaceChildren();
-
-  const wrongAnswers = shuffle(kana.filter((item) => item.kana !== question.kana)).slice(0, 3);
-  shuffle([question, ...wrongAnswers]).forEach((answer) => {
-    const button = document.createElement("button");
-    button.className = "answer-button";
-    button.type = "button";
-    button.textContent = answer.kana;
-    button.dataset.answer = answer.kana;
-    answerGrid.append(button);
+  wordSlots.classList.remove("is-hidden");
+  wordSlots.replaceChildren();
+  wordSlots.setAttribute("aria-label", `${characters.length}もじの ことば`);
+  kanaGrid.querySelectorAll(".kana-button").forEach((button) => {
+    button.classList.remove("is-answer-selected");
+    button.setAttribute("aria-pressed", "false");
+  });
+  characters.forEach((_, index) => {
+    const slot = document.createElement("span");
+    slot.className = "word-slot";
+    slot.setAttribute("aria-label", `${index + 1}もじめ`);
+    wordSlots.append(slot);
   });
 }
 
 function finishQuiz() {
   quizFinished = true;
-  questionKana.textContent = "🎉";
-  questionSound.classList.add("is-hidden");
+  questionEmoji.textContent = "🎉";
+  wordSlots.replaceChildren();
+  wordSlots.classList.add("is-hidden");
   questionCount.textContent = "チャレンジ クリア！";
   quizProgress.style.width = "100%";
-  answerGrid.classList.add("is-hidden");
   quizFeedback.textContent = `よく がんばったね！ ${quizQuestions.length}もん中 ${score}もん せいかい！`;
   quizFeedback.className = "quiz-feedback is-correct";
   nextQuestionButton.textContent = "もういちど あそぶ ↻";
@@ -221,16 +235,21 @@ function finishQuiz() {
 
 function setMode(mode) {
   const isLearning = mode === "learn";
-  learnView.classList.toggle("is-hidden", !isLearning);
+  currentMode = mode;
+  appShell.classList.toggle("is-quiz", !isLearning);
   quizView.classList.toggle("is-hidden", isLearning);
   learnModeButton.classList.toggle("is-active", isLearning);
   quizModeButton.classList.toggle("is-active", !isLearning);
   learnModeButton.setAttribute("aria-pressed", String(isLearning));
   quizModeButton.setAttribute("aria-pressed", String(!isLearning));
   title.textContent = isLearning ? "もじを えらんでみよう！" : "クイズに チャレンジ！";
-  eyebrow.textContent = isLearning ? "ひらがなを おぼえよう" : "おぼえた もじで あそぼう";
+  eyebrow.textContent = isLearning ? "ひらがなを おぼえよう" : "えをみて ことばを つくろう";
 
-  if (mode === "quiz") startQuiz();
+  if (isLearning) {
+    selectKana(selectedIndex);
+  } else {
+    startQuiz();
+  }
 }
 
 renderKanaGrid();
@@ -239,10 +258,51 @@ selectKana(selectedIndex);
 kanaGrid.addEventListener("click", (event) => {
   const button = event.target.closest(".kana-button");
   if (!button) return;
+  if (currentMode === "quiz") {
+    handleQuizKana(button);
+    return;
+  }
+
   const index = kana.findIndex((item) => item.kana === button.dataset.kana);
   selectKana(index);
   speak(button.dataset.kana);
 });
+
+function handleQuizKana(button) {
+  if (answered || quizFinished) return;
+
+  const chosenKana = button.dataset.kana;
+  const question = quizQuestions[quizIndex];
+  const characters = Array.from(question.word);
+  speak(chosenKana);
+
+  if (chosenKana !== characters[currentAnswerIndex]) {
+    quizFeedback.textContent = "おしい！ もういちど かんがえてね";
+    quizFeedback.className = "quiz-feedback is-wrong";
+    return;
+  }
+
+  wordSlots.children[currentAnswerIndex].textContent = chosenKana;
+  button.classList.add("is-answer-selected");
+  button.setAttribute("aria-pressed", "true");
+  currentAnswerIndex += 1;
+
+  if (currentAnswerIndex < characters.length) {
+    quizFeedback.textContent = `${currentAnswerIndex}もじめ！ そのちょうし！`;
+    quizFeedback.className = "quiz-feedback";
+    return;
+  }
+
+  answered = true;
+  score += 1;
+  scoreDisplay.textContent = score;
+  quizFeedback.textContent = "せいかい！ すごいね！ 🎉";
+  quizFeedback.className = "quiz-feedback is-correct";
+  nextQuestionButton.classList.remove("is-hidden");
+  if (quizIndex === quizQuestions.length - 1) {
+    nextQuestionButton.textContent = "けっかを みる →";
+  }
+}
 
 learnModeButton.addEventListener("click", () => setMode("learn"));
 quizModeButton.addEventListener("click", () => setMode("quiz"));
@@ -251,38 +311,6 @@ nextButton.addEventListener("click", () => selectKana(selectedIndex + 1));
 speakButton.addEventListener("click", () => {
   const item = kana[selectedIndex];
   speak(`${item.kana}。${item.word}`);
-});
-questionSound.addEventListener("click", () => speak(quizQuestions[quizIndex]?.kana ?? ""));
-
-answerGrid.addEventListener("click", (event) => {
-  const button = event.target.closest(".answer-button");
-  if (!button || answered) return;
-  answered = true;
-
-  const correctKana = quizQuestions[quizIndex].kana;
-  const isCorrect = button.dataset.answer === correctKana;
-  if (isCorrect) {
-    score += 1;
-    scoreDisplay.textContent = score;
-    quizFeedback.textContent = "せいかい！ すごいね！ 🎉";
-    quizFeedback.classList.add("is-correct");
-  } else {
-    quizFeedback.textContent = `おしい！ せいかいは「${correctKana}」だよ`;
-    quizFeedback.classList.add("is-wrong");
-  }
-
-  answerGrid.querySelectorAll(".answer-button").forEach((answerButton) => {
-    answerButton.disabled = true;
-    if (answerButton.dataset.answer === correctKana) {
-      answerButton.classList.add("is-correct");
-    } else if (answerButton === button) {
-      answerButton.classList.add("is-wrong");
-    }
-  });
-  nextQuestionButton.classList.remove("is-hidden");
-  if (quizIndex === quizQuestions.length - 1) {
-    nextQuestionButton.textContent = "けっかを みる →";
-  }
 });
 
 nextQuestionButton.addEventListener("click", () => {
