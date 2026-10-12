@@ -172,6 +172,34 @@ a:focus-visible {
   margin-right: 5px;
 }
 
+.script-switch {
+  display: flex;
+  width: fit-content;
+  gap: 4px;
+  margin: 0 0 12px;
+  padding: 4px;
+  border-radius: 14px;
+  background: #f2eee6;
+}
+
+.script-button {
+  min-height: 34px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: #777187;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.script-button.is-active {
+  background: #fff;
+  box-shadow: 0 2px 7px rgb(55 50 77 / 9%);
+  color: var(--purple-dark);
+}
+
 .learn-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.57fr) minmax(300px, 0.83fr);
@@ -669,6 +697,10 @@ a:focus-visible {
     max-width: 145px;
     font-size: 11px;
     text-align: right;
+  }
+
+  .script-switch {
+    margin-bottom: 9px;
   }
 
   .learn-layout {

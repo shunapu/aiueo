@@ -123,26 +123,30 @@ const smallKanaRows = [
   ],
 ];
 
-const kanaTableGroups = [
+const hiraganaTableGroups = [
   { title: "あ〜ん", rows: kanaRows },
   { title: "だくおん・はんだくおん", rows: voicedKanaRows },
   { title: "ちいさい もじ", rows: smallKanaRows },
 ];
-const kana = kanaTableGroups.flatMap((group) => group.rows.flat());
-const kanaByCharacter = new Map(kana.map((item) => [item.kana, item]));
-const quizWords = kana.filter(({ word }) => {
-  const characters = Array.from(word);
-  return characters.length >= 2
-    && characters.length <= 5
-    && characters.every((character) => kanaByCharacter.has(character));
-});
+const toKatakana = (text) => Array.from(text, (character) => {
+  const codePoint = character.codePointAt(0);
+  return codePoint >= 0x3041 && codePoint <= 0x3096
+    ? String.fromCodePoint(codePoint + 0x60)
+    : character;
+}).join("");
 const appShell = document.querySelector(".app-shell");
 const kanaGrid = document.querySelector("#kana-grid");
 const quizView = document.querySelector("#quiz-view");
 const learnModeButton = document.querySelector("#learn-mode");
 const quizModeButton = document.querySelector("#quiz-mode");
+const hiraganaModeButton = document.querySelector("#hiragana-mode");
+const katakanaModeButton = document.querySelector("#katakana-mode");
 const title = document.querySelector("#page-title");
 const eyebrow = document.querySelector("#eyebrow");
+const boardTitle = document.querySelector("#board-title");
+const boardKicker = document.querySelector(".letter-board .section-kicker");
+const quizKicker = document.querySelector(".quiz-heading .section-kicker");
+const learnView = document.querySelector("#learn-view");
 const detailKana = document.querySelector("#detail-kana");
 const detailReading = document.querySelector("#detail-reading");
 const exampleWord = document.querySelector("#example-word");
@@ -166,10 +170,66 @@ let selectedIndex = 0;
 let quizQuestions = [];
 let quizIndex = 0;
 let currentMode = "learn";
+let currentScript = null;
+let kanaTableGroups = hiraganaTableGroups;
+let kana = kanaTableGroups.flatMap((group) => group.rows.flat());
+let kanaByCharacter = new Map(kana.map((item) => [item.kana, item]));
+let quizWords = [];
 let score = 0;
 let answered = false;
 let quizFinished = false;
 let currentAnswerIndex = 0;
+
+function makeScriptGroups(script) {
+  if (script === "hiragana") return hiraganaTableGroups;
+
+  return hiraganaTableGroups.map((group) => ({
+    title: group.title,
+    rows: group.rows.map((row) => row.map((item) => ({
+      ...item,
+      kana: toKatakana(item.kana),
+      word: toKatakana(item.word),
+    }))),
+  }));
+}
+
+function updateScript(script) {
+  if (currentScript === script) return;
+
+  currentScript = script;
+  kanaTableGroups = makeScriptGroups(script);
+  kana = kanaTableGroups.flatMap((group) => group.rows.flat());
+  kanaByCharacter = new Map(kana.map((item) => [item.kana, item]));
+  quizWords = kana.filter(({ word }) => {
+    const characters = Array.from(word);
+    return characters.length >= 2
+      && characters.length <= 5
+      && characters.every((character) => kanaByCharacter.has(character));
+  });
+
+  const isHiragana = script === "hiragana";
+  hiraganaModeButton.classList.toggle("is-active", isHiragana);
+  katakanaModeButton.classList.toggle("is-active", !isHiragana);
+  hiraganaModeButton.setAttribute("aria-pressed", String(isHiragana));
+  katakanaModeButton.setAttribute("aria-pressed", String(!isHiragana));
+  learnView.setAttribute("aria-label", `${isHiragana ? "ひらがな" : "カタカナ"}をおぼえる`);
+  quizView.setAttribute("aria-label", `${isHiragana ? "ひらがな" : "カタカナ"}クイズ`);
+  boardTitle.textContent = `${isHiragana ? "ひらがな" : "カタカナ"} ひょう`;
+  boardKicker.textContent = isHiragana ? "HIRAGANA" : "KATAKANA";
+  quizKicker.textContent = `${isHiragana ? "ひらがな" : "カタカナ"} チャレンジ`;
+  kanaGrid.setAttribute("aria-label", isHiragana ? "ひらがな" : "カタカナ");
+  document.querySelector("#quiz-title").textContent = `${isHiragana ? "ひらがな" : "カタカナ"}で こたえよう`;
+  title.textContent = currentMode === "learn" ? "もじを えらんでみよう！" : "クイズに チャレンジ！";
+  eyebrow.textContent = currentMode === "learn"
+    ? `${isHiragana ? "ひらがな" : "カタカナ"}を おぼえよう`
+    : "えをみて ことばを つくろう";
+
+  kanaGrid.replaceChildren();
+  renderKanaGrid();
+  selectedIndex = 0;
+  if (currentMode === "learn") selectKana(selectedIndex);
+  else startQuiz();
+}
 
 function speak(text) {
   if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) return;
@@ -278,7 +338,7 @@ function renderQuestion() {
   questionEmoji.textContent = question.emoji;
   questionCount.textContent = `${quizIndex + 1} / ${quizQuestions.length} もんめ`;
   quizProgress.style.width = `${((quizIndex + 1) / quizQuestions.length) * 100}%`;
-  quizFeedback.textContent = "えをみて、ひらがなを じゅんばんに おしてね！";
+  quizFeedback.textContent = `えをみて、${currentScript === "hiragana" ? "ひらがな" : "カタカナ"}を じゅんばんに おしてね！`;
   quizFeedback.className = "quiz-feedback";
   showAnswerButton.classList.remove("is-hidden");
   nextQuestionButton.classList.add("is-hidden");
@@ -322,7 +382,9 @@ function setMode(mode) {
   learnModeButton.setAttribute("aria-pressed", String(isLearning));
   quizModeButton.setAttribute("aria-pressed", String(!isLearning));
   title.textContent = isLearning ? "もじを えらんでみよう！" : "クイズに チャレンジ！";
-  eyebrow.textContent = isLearning ? "ひらがなを おぼえよう" : "えをみて ことばを つくろう";
+  eyebrow.textContent = isLearning
+    ? `${currentScript === "hiragana" ? "ひらがな" : "カタカナ"}を おぼえよう`
+    : "えをみて ことばを つくろう";
 
   if (isLearning) {
     selectKana(selectedIndex);
@@ -331,8 +393,7 @@ function setMode(mode) {
   }
 }
 
-renderKanaGrid();
-selectKana(selectedIndex);
+updateScript("hiragana");
 
 kanaGrid.addEventListener("click", (event) => {
   const button = event.target.closest(".kana-button");
@@ -403,6 +464,8 @@ function showQuizAnswer() {
 
 learnModeButton.addEventListener("click", () => setMode("learn"));
 quizModeButton.addEventListener("click", () => setMode("quiz"));
+hiraganaModeButton.addEventListener("click", () => updateScript("hiragana"));
+katakanaModeButton.addEventListener("click", () => updateScript("katakana"));
 showAnswerButton.addEventListener("click", showQuizAnswer);
 previousButton.addEventListener("click", () => selectKana(selectedIndex - 1));
 nextButton.addEventListener("click", () => selectKana(selectedIndex + 1));
