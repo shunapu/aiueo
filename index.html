@@ -1,11 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff9ed">
+  <meta name="description" content="ひらがなを見て、聞いて、クイズで楽しくおぼえよう！">
+  <title>あいうえおの ぼうけん</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
 </head>
 <body>
-    あいうえお
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="あいうえおのぼうけん ホーム">
+        <span class="brand-mark" aria-hidden="true">あ</span>
+        <span class="brand-name">あいうえおの<br><strong>ぼうけん</strong></span>
+      </a>
+      <nav class="mode-switch" aria-label="あそびかた">
+        <button class="mode-button is-active" id="learn-mode" type="button" aria-pressed="true">📖 おぼえる</button>
+        <button class="mode-button" id="quiz-mode" type="button" aria-pressed="false">⭐ クイズ</button>
+      </nav>
+      <div class="top-decoration" aria-hidden="true"><span>✦</span><span>●</span><span>✦</span></div>
+    </header>
+
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow" id="eyebrow">ひらがなを おぼえよう</p>
+        <h1 id="page-title">もじを えらんでみよう！</h1>
+      </div>
+      <p class="intro-note"><span aria-hidden="true">👆</span> もじを おすと おとが きけるよ</p>
+    </section>
+
+    <section class="learn-view" id="learn-view" aria-label="ひらがなをおぼえる">
+      <div class="learn-layout">
+        <section class="letter-board panel" aria-labelledby="board-title">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">HIRAGANA</p>
+              <h2 id="board-title">ひらがな ひょう</h2>
+            </div>
+            <span class="count-badge">46 もじ</span>
+          </div>
+          <div class="kana-grid" id="kana-grid" aria-label="ひらがな"></div>
+        </section>
+
+        <aside class="letter-detail" aria-label="えらんだもじ">
+          <div class="detail-card">
+            <div class="detail-sparkle sparkle-one" aria-hidden="true">✦</div>
+            <div class="detail-sparkle sparkle-two" aria-hidden="true">✧</div>
+            <p class="detail-label">この もじは…</p>
+            <div class="detail-kana" id="detail-kana" aria-live="polite">あ</div>
+            <p class="detail-reading" id="detail-reading">「あ」と よむよ</p>
+            <div class="example-card">
+              <span class="example-emoji" id="example-emoji" aria-hidden="true">🍌</span>
+              <div class="example-copy">
+                <span class="example-label">「あ」の ことば</span>
+                <strong id="example-word">あり</strong>
+              </div>
+              <button class="sound-button" id="speak-button" type="button" aria-label="あ、あり をきく">🔊</button>
+            </div>
+          </div>
+          <div class="detail-controls">
+            <button class="round-button" id="previous-button" type="button" aria-label="ひとつまえのもじ">←</button>
+            <span id="letter-position">1 / 46</span>
+            <button class="round-button" id="next-button" type="button" aria-label="つぎのもじ">→</button>
+          </div>
+          <p class="encouragement">いろんな もじを おしてみよう！ <span aria-hidden="true">🌈</span></p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="quiz-view is-hidden" id="quiz-view" aria-label="ひらがなクイズ">
+      <div class="quiz-card panel">
+        <div class="quiz-heading">
+          <div>
+            <p class="section-kicker">ひらがな チャレンジ</p>
+            <h2 id="quiz-title">この もじは なんて よむ？</h2>
+          </div>
+          <div class="score-badge">⭐ <span id="score">0</span> てん</div>
+        </div>
+        <div class="quiz-progress" aria-label="クイズのすすみぐあい">
+          <span id="quiz-progress-bar"></span>
+        </div>
+        <p class="question-count" id="question-count">1 / 10 もんめ</p>
+        <div class="question-kana-wrap">
+          <span class="question-sparkle" aria-hidden="true">✦</span>
+          <span class="question-kana" id="question-kana" aria-live="polite">あ</span>
+          <button class="question-sound" id="question-sound" type="button" aria-label="もじのおとをきく">🔊</button>
+        </div>
+        <div class="answer-grid" id="answer-grid" aria-label="こたえをえらぶ"></div>
+        <p class="quiz-feedback" id="quiz-feedback" aria-live="polite">こたえを えらんでね！</p>
+        <button class="next-question is-hidden" id="next-question" type="button">つぎの もんだいへ →</button>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <span aria-hidden="true">🌼</span> あせらず たのしく おぼえよう <span aria-hidden="true">🌼</span>
+    </footer>
+  </main>
 </body>
 </html>

@@ -1,0 +1,299 @@
+const kanaRows = [
+  [
+    { kana: "あ", word: "あり", emoji: "🐜" },
+    { kana: "い", word: "いぬ", emoji: "🐕" },
+    { kana: "う", word: "うし", emoji: "🐄" },
+    { kana: "え", word: "えび", emoji: "🦐" },
+    { kana: "お", word: "おにぎり", emoji: "🍙" },
+  ],
+  [
+    { kana: "か", word: "かさ", emoji: "☂️" },
+    { kana: "き", word: "きりん", emoji: "🦒" },
+    { kana: "く", word: "くま", emoji: "🐻" },
+    { kana: "け", word: "けむし", emoji: "🐛" },
+    { kana: "こ", word: "こま", emoji: "🪀" },
+  ],
+  [
+    { kana: "さ", word: "さかな", emoji: "🐟" },
+    { kana: "し", word: "しまうま", emoji: "🦓" },
+    { kana: "す", word: "すいか", emoji: "🍉" },
+    { kana: "せ", word: "せみ", emoji: "🪲" },
+    { kana: "そ", word: "そら", emoji: "☀️" },
+  ],
+  [
+    { kana: "た", word: "たいこ", emoji: "🥁" },
+    { kana: "ち", word: "ちょうちょ", emoji: "🦋" },
+    { kana: "つ", word: "つき", emoji: "🌙" },
+    { kana: "て", word: "てんとうむし", emoji: "🐞" },
+    { kana: "と", word: "とけい", emoji: "⏰" },
+  ],
+  [
+    { kana: "な", word: "なす", emoji: "🍆" },
+    { kana: "に", word: "にわとり", emoji: "🐓" },
+    { kana: "ぬ", word: "ぬいぐるみ", emoji: "🧸" },
+    { kana: "ね", word: "ねこ", emoji: "🐈" },
+    { kana: "の", word: "のり", emoji: "🍙" },
+  ],
+  [
+    { kana: "は", word: "はな", emoji: "🌷" },
+    { kana: "ひ", word: "ひこうき", emoji: "✈️" },
+    { kana: "ふ", word: "ふうせん", emoji: "🎈" },
+    { kana: "へ", word: "へび", emoji: "🐍" },
+    { kana: "ほ", word: "ほし", emoji: "⭐" },
+  ],
+  [
+    { kana: "ま", word: "まくら", emoji: "🛏️" },
+    { kana: "み", word: "みかん", emoji: "🍊" },
+    { kana: "む", word: "むし", emoji: "🐞" },
+    { kana: "め", word: "めだか", emoji: "🐟" },
+    { kana: "も", word: "もも", emoji: "🍑" },
+  ],
+  [
+    { kana: "や", word: "やま", emoji: "⛰️" },
+    { kana: "ゆ", word: "ゆき", emoji: "❄️" },
+    { kana: "よ", word: "よる", emoji: "🌙" },
+  ],
+  [
+    { kana: "ら", word: "らっぱ", emoji: "🎺" },
+    { kana: "り", word: "りんご", emoji: "🍎" },
+    { kana: "る", word: "るすばん", emoji: "🏠" },
+    { kana: "れ", word: "れもん", emoji: "🍋" },
+    { kana: "ろ", word: "ろうそく", emoji: "🕯️" },
+  ],
+  [
+    { kana: "わ", word: "わに", emoji: "🐊" },
+    { kana: "を", word: "みずを のむ", emoji: "🥤" },
+    { kana: "ん", word: "ぱん", emoji: "🍞" },
+  ],
+];
+
+const kana = kanaRows.flat();
+const kanaByCharacter = new Map(kana.map((item) => [item.kana, item]));
+const kanaGrid = document.querySelector("#kana-grid");
+const learnView = document.querySelector("#learn-view");
+const quizView = document.querySelector("#quiz-view");
+const learnModeButton = document.querySelector("#learn-mode");
+const quizModeButton = document.querySelector("#quiz-mode");
+const title = document.querySelector("#page-title");
+const eyebrow = document.querySelector("#eyebrow");
+const detailKana = document.querySelector("#detail-kana");
+const detailReading = document.querySelector("#detail-reading");
+const exampleWord = document.querySelector("#example-word");
+const exampleEmoji = document.querySelector("#example-emoji");
+const exampleLabel = document.querySelector(".example-label");
+const speakButton = document.querySelector("#speak-button");
+const letterPosition = document.querySelector("#letter-position");
+const previousButton = document.querySelector("#previous-button");
+const nextButton = document.querySelector("#next-button");
+const questionKana = document.querySelector("#question-kana");
+const questionSound = document.querySelector("#question-sound");
+const answerGrid = document.querySelector("#answer-grid");
+const quizFeedback = document.querySelector("#quiz-feedback");
+const nextQuestionButton = document.querySelector("#next-question");
+const questionCount = document.querySelector("#question-count");
+const quizProgress = document.querySelector("#quiz-progress-bar");
+const scoreDisplay = document.querySelector("#score");
+
+let selectedIndex = 0;
+let quizQuestions = [];
+let quizIndex = 0;
+let score = 0;
+let answered = false;
+let quizFinished = false;
+
+function speak(text) {
+  if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) return;
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "ja-JP";
+  utterance.rate = 0.85;
+  utterance.pitch = 1.1;
+  window.speechSynthesis.speak(utterance);
+}
+
+function renderKanaGrid() {
+  kanaRows.forEach((row) => {
+    const rowElement = document.createElement("div");
+    rowElement.className = `kana-row${row.length < 5 ? " is-short" : ""}`;
+
+    row.forEach((item) => {
+      const button = document.createElement("button");
+      button.className = "kana-button";
+      button.type = "button";
+      button.textContent = item.kana;
+      button.dataset.kana = item.kana;
+      button.setAttribute("aria-label", `${item.kana}、${item.word}`);
+      button.setAttribute("aria-pressed", "false");
+      rowElement.append(button);
+    });
+
+    kanaGrid.append(rowElement);
+  });
+}
+
+function selectKana(index) {
+  selectedIndex = (index + kana.length) % kana.length;
+  const item = kana[selectedIndex];
+  const isParticle = item.kana === "を";
+  const isEndingSound = item.kana === "ん";
+
+  detailKana.textContent = item.kana;
+  detailReading.textContent = isParticle
+    ? "「を」は ことばを つなぐよ"
+    : isEndingSound
+      ? "「ん」は おしまいの おとだよ"
+      : `「${item.kana}」と よむよ`;
+  exampleWord.textContent = item.word;
+  exampleEmoji.textContent = item.emoji;
+  exampleLabel.textContent = isParticle
+    ? "「を」の つかいかた"
+    : isEndingSound
+      ? "「ん」の ことば"
+      : `「${item.kana}」の ことば`;
+  speakButton.setAttribute("aria-label", `${item.kana}、${item.word} をきく`);
+  letterPosition.textContent = `${selectedIndex + 1} / ${kana.length}`;
+
+  kanaGrid.querySelectorAll(".kana-button").forEach((button) => {
+    const isSelected = button.dataset.kana === item.kana;
+    button.classList.toggle("is-selected", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+  });
+}
+
+function shuffle(items) {
+  const shuffled = [...items];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
+function startQuiz() {
+  quizQuestions = shuffle(kana).slice(0, 10);
+  quizIndex = 0;
+  score = 0;
+  quizFinished = false;
+  scoreDisplay.textContent = score;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const question = quizQuestions[quizIndex];
+  questionKana.textContent = question.kana;
+  questionSound.setAttribute("aria-label", `${question.kana} のおとをきく`);
+  questionSound.classList.remove("is-hidden");
+  questionCount.textContent = `${quizIndex + 1} / ${quizQuestions.length} もんめ`;
+  quizProgress.style.width = `${((quizIndex + 1) / quizQuestions.length) * 100}%`;
+  quizFeedback.textContent = "こたえを えらんでね！";
+  quizFeedback.className = "quiz-feedback";
+  nextQuestionButton.classList.add("is-hidden");
+  nextQuestionButton.textContent = "つぎの もんだいへ →";
+  answerGrid.classList.remove("is-hidden");
+  answerGrid.replaceChildren();
+
+  const wrongAnswers = shuffle(kana.filter((item) => item.kana !== question.kana)).slice(0, 3);
+  shuffle([question, ...wrongAnswers]).forEach((answer) => {
+    const button = document.createElement("button");
+    button.className = "answer-button";
+    button.type = "button";
+    button.textContent = answer.kana;
+    button.dataset.answer = answer.kana;
+    answerGrid.append(button);
+  });
+}
+
+function finishQuiz() {
+  quizFinished = true;
+  questionKana.textContent = "🎉";
+  questionSound.classList.add("is-hidden");
+  questionCount.textContent = "チャレンジ クリア！";
+  quizProgress.style.width = "100%";
+  answerGrid.classList.add("is-hidden");
+  quizFeedback.textContent = `よく がんばったね！ ${quizQuestions.length}もん中 ${score}もん せいかい！`;
+  quizFeedback.className = "quiz-feedback is-correct";
+  nextQuestionButton.textContent = "もういちど あそぶ ↻";
+  nextQuestionButton.classList.remove("is-hidden");
+}
+
+function setMode(mode) {
+  const isLearning = mode === "learn";
+  learnView.classList.toggle("is-hidden", !isLearning);
+  quizView.classList.toggle("is-hidden", isLearning);
+  learnModeButton.classList.toggle("is-active", isLearning);
+  quizModeButton.classList.toggle("is-active", !isLearning);
+  learnModeButton.setAttribute("aria-pressed", String(isLearning));
+  quizModeButton.setAttribute("aria-pressed", String(!isLearning));
+  title.textContent = isLearning ? "もじを えらんでみよう！" : "クイズに チャレンジ！";
+  eyebrow.textContent = isLearning ? "ひらがなを おぼえよう" : "おぼえた もじで あそぼう";
+
+  if (mode === "quiz") startQuiz();
+}
+
+renderKanaGrid();
+selectKana(selectedIndex);
+
+kanaGrid.addEventListener("click", (event) => {
+  const button = event.target.closest(".kana-button");
+  if (!button) return;
+  const index = kana.findIndex((item) => item.kana === button.dataset.kana);
+  selectKana(index);
+});
+
+learnModeButton.addEventListener("click", () => setMode("learn"));
+quizModeButton.addEventListener("click", () => setMode("quiz"));
+previousButton.addEventListener("click", () => selectKana(selectedIndex - 1));
+nextButton.addEventListener("click", () => selectKana(selectedIndex + 1));
+speakButton.addEventListener("click", () => {
+  const item = kana[selectedIndex];
+  speak(`${item.kana}。${item.word}`);
+});
+questionSound.addEventListener("click", () => speak(quizQuestions[quizIndex]?.kana ?? ""));
+
+answerGrid.addEventListener("click", (event) => {
+  const button = event.target.closest(".answer-button");
+  if (!button || answered) return;
+  answered = true;
+
+  const correctKana = quizQuestions[quizIndex].kana;
+  const isCorrect = button.dataset.answer === correctKana;
+  if (isCorrect) {
+    score += 1;
+    scoreDisplay.textContent = score;
+    quizFeedback.textContent = "せいかい！ すごいね！ 🎉";
+    quizFeedback.classList.add("is-correct");
+  } else {
+    quizFeedback.textContent = `おしい！ せいかいは「${correctKana}」だよ`;
+    quizFeedback.classList.add("is-wrong");
+  }
+
+  answerGrid.querySelectorAll(".answer-button").forEach((answerButton) => {
+    answerButton.disabled = true;
+    if (answerButton.dataset.answer === correctKana) {
+      answerButton.classList.add("is-correct");
+    } else if (answerButton === button) {
+      answerButton.classList.add("is-wrong");
+    }
+  });
+  nextQuestionButton.classList.remove("is-hidden");
+  if (quizIndex === quizQuestions.length - 1) {
+    nextQuestionButton.textContent = "けっかを みる →";
+  }
+});
+
+nextQuestionButton.addEventListener("click", () => {
+  if (quizFinished) {
+    startQuiz();
+    return;
+  }
+
+  if (quizIndex >= quizQuestions.length - 1 && answered) {
+    finishQuiz();
+    return;
+  }
+
+  quizIndex += 1;
+  renderQuestion();
+});

@@ -1,0 +1,759 @@
+:root {
+  font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  color: #37324d;
+  background: #fff9ed;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --purple: #7562d8;
+  --purple-dark: #5f4cc2;
+  --ink: #37324d;
+  --muted: #88839c;
+  --yellow: #ffcc58;
+  --pink: #ff8e9a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 7% 14%, rgb(255 217 126 / 19%), transparent 26rem),
+    radial-gradient(ellipse at 95% 45%, rgb(255 182 191 / 16%), transparent 25rem),
+    #fff9ed;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 4px solid #ffbd40;
+  outline-offset: 3px;
+}
+
+.app-shell {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  height: 91px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #efe9dc;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 16px;
+  background: #ffcf62;
+  box-shadow: 0 4px 0 #f2b946;
+  color: #fff;
+  font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  font-size: 31px;
+  font-weight: 900;
+  transform: rotate(-5deg);
+}
+
+.brand-name {
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.brand-name strong {
+  font-size: 16px;
+}
+
+.mode-switch {
+  display: flex;
+  gap: 7px;
+  padding: 5px;
+  border-radius: 17px;
+  background: #f2eee6;
+}
+
+.mode-button {
+  min-height: 42px;
+  padding: 0 19px;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: #777187;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.mode-button:hover {
+  transform: translateY(-1px);
+}
+
+.mode-button.is-active {
+  background: #fff;
+  box-shadow: 0 2px 7px rgb(55 50 77 / 9%);
+  color: var(--purple-dark);
+}
+
+.top-decoration {
+  display: flex;
+  width: 90px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 13px;
+  color: #f3bc48;
+}
+
+.top-decoration span:first-child {
+  font-size: 18px;
+}
+
+.top-decoration span:nth-child(2) {
+  color: #ff99a2;
+  font-size: 13px;
+}
+
+.intro {
+  display: flex;
+  min-height: 126px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.eyebrow,
+.section-kicker {
+  margin: 0 0 5px;
+  color: var(--purple);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.intro h1 {
+  margin: 0;
+  font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  font-size: clamp(25px, 3.4vw, 34px);
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+
+.intro-note {
+  margin: 12px 0 0;
+  color: #837c91;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.intro-note span {
+  margin-right: 5px;
+}
+
+.learn-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.57fr) minmax(300px, 0.83fr);
+  align-items: stretch;
+  gap: 23px;
+}
+
+.panel {
+  border: 1px solid #f0ebdf;
+  border-radius: 25px;
+  background: rgb(255 255 255 / 88%);
+  box-shadow: 0 9px 30px rgb(94 74 51 / 5%);
+}
+
+.letter-board {
+  padding: 24px 25px 26px;
+}
+
+.panel-heading,
+.quiz-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-kicker {
+  margin-bottom: 3px;
+  font-size: 10px;
+}
+
+.panel-heading h2,
+.quiz-heading h2 {
+  margin: 0;
+  font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.count-badge {
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: #f4f0ff;
+  color: #7763ce;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.kana-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.kana-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.kana-row.is-short .kana-button:first-child {
+  grid-column-start: 2;
+}
+
+.kana-button {
+  position: relative;
+  display: grid;
+  min-height: 57px;
+  place-items: center;
+  border: 2px solid #f1edf8;
+  border-radius: 15px;
+  background: #fbfaff;
+  color: #514b65;
+  cursor: pointer;
+  font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  font-size: 27px;
+  font-weight: 700;
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.kana-button:hover {
+  transform: translateY(-2px);
+  border-color: #dcd4fa;
+  background: #f6f3ff;
+}
+
+.kana-button.is-selected {
+  transform: translateY(-2px);
+  border-color: var(--purple);
+  background: var(--purple);
+  box-shadow: 0 4px 0 #5e4bb7;
+  color: #fff;
+}
+
+.letter-detail {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.detail-card {
+  position: relative;
+  overflow: hidden;
+  padding: 22px 23px 20px;
+  border: 1px solid #f4d985;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #fff5cb 0%, #ffe6ab 100%);
+  box-shadow: 0 7px 0 #f3d88e;
+  text-align: center;
+}
+
+.detail-label {
+  position: relative;
+  margin: 0;
+  color: #957d41;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.detail-kana {
+  position: relative;
+  margin: -1px 0 -7px;
+  color: #ef7c66;
+  font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  font-size: clamp(104px, 13vw, 146px);
+  font-weight: 900;
+  line-height: 1.3;
+  text-shadow: 0 5px 0 rgb(219 118 87 / 13%);
+}
+
+.detail-reading {
+  position: relative;
+  margin: 0 0 17px;
+  color: #775f35;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.detail-sparkle {
+  position: absolute;
+  color: #f7bd50;
+}
+
+.sparkle-one {
+  top: 60px;
+  right: 27px;
+  font-size: 25px;
+}
+
+.sparkle-two {
+  top: 104px;
+  left: 27px;
+  font-size: 19px;
+}
+
+.example-card {
+  display: flex;
+  min-height: 67px;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 11px;
+  border: 1px solid rgb(199 161 81 / 17%);
+  border-radius: 17px;
+  background: rgb(255 255 255 / 82%);
+  text-align: left;
+}
+
+.example-emoji {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 13px;
+  background: #fff7df;
+  font-size: 25px;
+}
+
+.example-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.example-label {
+  color: #a08d66;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.example-copy strong {
+  color: #504866;
+  font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.sound-button,
+.question-sound {
+  display: grid;
+  width: 41px;
+  height: 41px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 14px;
+  background: #806ddd;
+  box-shadow: 0 3px 0 #6553bb;
+  cursor: pointer;
+  font-size: 20px;
+  transition: transform 140ms ease;
+}
+
+.sound-button:hover,
+.question-sound:hover {
+  transform: translateY(-2px);
+}
+
+.detail-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 17px;
+  margin-top: 22px;
+  color: #777187;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.round-button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid #e6e0f4;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--purple);
+  cursor: pointer;
+  font-size: 19px;
+  transition: background 140ms ease, transform 140ms ease;
+}
+
+.round-button:hover {
+  transform: translateY(-2px);
+  background: #f3efff;
+}
+
+.encouragement {
+  margin: 16px 0 0;
+  color: #8d879e;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.quiz-view {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.quiz-card {
+  padding: 28px clamp(20px, 6vw, 55px) 30px;
+  text-align: center;
+}
+
+.quiz-heading {
+  text-align: left;
+}
+
+.score-badge {
+  padding: 9px 13px;
+  border-radius: 20px;
+  background: #fff4d3;
+  color: #ad8030;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.quiz-progress {
+  height: 9px;
+  overflow: hidden;
+  margin-top: 22px;
+  border-radius: 20px;
+  background: #f0edf5;
+}
+
+.quiz-progress span {
+  display: block;
+  width: 10%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #9984f2, #ff96a4);
+  transition: width 220ms ease;
+}
+
+.question-count {
+  margin: 9px 0 0;
+  color: #90899f;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.question-kana-wrap {
+  position: relative;
+  display: flex;
+  min-height: 205px;
+  align-items: center;
+  justify-content: center;
+  margin: 4px auto 14px;
+}
+
+.question-kana {
+  color: #ed806d;
+  font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  font-size: 148px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 6px 0 rgb(219 118 87 / 13%);
+}
+
+.question-sound {
+  position: absolute;
+  right: calc(50% - 105px);
+  bottom: 25px;
+}
+
+.question-sparkle {
+  position: absolute;
+  top: 28px;
+  left: calc(50% - 86px);
+  color: #f4c459;
+  font-size: 24px;
+}
+
+.answer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.answer-button {
+  min-height: 55px;
+  border: 2px solid #eee9f7;
+  border-radius: 16px;
+  background: #fcfbff;
+  color: #514b65;
+  cursor: pointer;
+  font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  font-size: 21px;
+  font-weight: 900;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.answer-button:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: #cfc5f8;
+  background: #f5f2ff;
+}
+
+.answer-button:disabled {
+  cursor: default;
+}
+
+.answer-button.is-correct {
+  border-color: #75c89e;
+  background: #e9f9f0;
+  color: #34885c;
+}
+
+.answer-button.is-wrong {
+  border-color: #f3a2a6;
+  background: #fff0f0;
+  color: #cd6269;
+}
+
+.quiz-feedback {
+  min-height: 27px;
+  margin: 16px 0 0;
+  color: #8e879b;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.quiz-feedback.is-correct {
+  color: #399568;
+}
+
+.quiz-feedback.is-wrong {
+  color: #dc7078;
+}
+
+.next-question {
+  min-height: 46px;
+  margin-top: 8px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 15px;
+  background: var(--purple);
+  box-shadow: 0 4px 0 #5e4bb7;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.next-question:hover {
+  background: var(--purple-dark);
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+.page-footer {
+  display: flex;
+  min-height: 75px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #a39bad;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    width: min(100% - 32px, 560px);
+  }
+
+  .topbar {
+    height: 78px;
+  }
+
+  .top-decoration {
+    display: none;
+  }
+
+  .mode-button {
+    padding: 0 13px;
+    font-size: 12px;
+  }
+
+  .intro {
+    min-height: 115px;
+  }
+
+  .intro-note {
+    max-width: 145px;
+    font-size: 11px;
+    text-align: right;
+  }
+
+  .learn-layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .letter-board {
+    padding: 20px 18px;
+  }
+
+  .kana-grid {
+    gap: 6px;
+    margin-top: 15px;
+  }
+
+  .kana-row {
+    gap: 6px;
+  }
+
+  .kana-button {
+    min-height: clamp(47px, 11vw, 58px);
+    border-radius: 12px;
+    font-size: clamp(22px, 6vw, 28px);
+  }
+
+  .letter-detail {
+    padding: 5px 0 13px;
+  }
+
+  .detail-card {
+    padding: 17px 19px;
+  }
+
+  .detail-kana {
+    font-size: 112px;
+  }
+
+  .detail-controls {
+    margin-top: 18px;
+  }
+
+  .encouragement {
+    margin-top: 12px;
+  }
+
+  .quiz-card {
+    padding: 22px 18px 25px;
+  }
+
+  .quiz-heading h2 {
+    font-size: 17px;
+  }
+
+  .question-kana-wrap {
+    min-height: 184px;
+  }
+
+  .question-kana {
+    font-size: 130px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell {
+    width: calc(100% - 22px);
+  }
+
+  .brand-name {
+    font-size: 11px;
+  }
+
+  .brand-name strong {
+    font-size: 14px;
+  }
+
+  .brand-mark {
+    width: 41px;
+    height: 41px;
+    font-size: 27px;
+  }
+
+  .mode-switch {
+    gap: 3px;
+    padding: 4px;
+  }
+
+  .mode-button {
+    padding: 0 9px;
+    font-size: 11px;
+  }
+
+  .intro {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .intro-note {
+    max-width: unset;
+    margin: 0;
+    text-align: left;
+  }
+
+  .letter-board {
+    padding: 17px 12px;
+  }
+
+  .kana-row {
+    gap: 4px;
+  }
+
+  .kana-button {
+    min-height: 45px;
+    border-radius: 10px;
+    font-size: 23px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
