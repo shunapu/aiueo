@@ -115,7 +115,7 @@ function speak(text) {
 function renderKanaGrid() {
   kanaRows.forEach((row) => {
     const rowElement = document.createElement("div");
-    rowElement.className = `kana-row${row.length < 5 ? " is-short" : ""}`;
+    rowElement.className = `kana-row${row.length < 5 ? " is-short" : ""}${row[0].kana === "や" ? " is-spaced" : ""}`;
 
     row.forEach((item) => {
       const button = document.createElement("button");

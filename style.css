@@ -237,6 +237,18 @@ a:focus-visible {
   grid-column-start: 2;
 }
 
+.kana-row.is-spaced .kana-button:nth-child(1) {
+  grid-column: 1;
+}
+
+.kana-row.is-spaced .kana-button:nth-child(2) {
+  grid-column: 3;
+}
+
+.kana-row.is-spaced .kana-button:nth-child(3) {
+  grid-column: 5;
+}
+
 .kana-button {
   position: relative;
   display: grid;
