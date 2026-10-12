@@ -677,7 +677,11 @@ a:focus-visible {
   }
 
   .topbar {
-    height: 66px;
+    height: auto;
+    min-height: 66px;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 0;
   }
 
   .top-decoration {
@@ -685,8 +689,9 @@ a:focus-visible {
   }
 
   .mode-button {
-    padding: 0 13px;
-    font-size: 12px;
+    min-height: 36px;
+    padding: 0 8px;
+    font-size: 11px;
   }
 
   .intro {
@@ -802,12 +807,14 @@ a:focus-visible {
   }
 
   .mode-switch {
+    width: 100%;
     gap: 3px;
     padding: 4px;
+    justify-content: center;
   }
 
   .mode-button {
-    padding: 0 9px;
+    padding: 0 8px;
     font-size: 11px;
   }
 
