@@ -67,7 +67,68 @@ const kanaRows = [
   ],
 ];
 
-const kana = kanaRows.flat();
+const voicedKanaRows = [
+  [
+    { kana: "が", word: "がっこう", emoji: "🏫" },
+    { kana: "ぎ", word: "ぎんこう", emoji: "🏦" },
+    { kana: "ぐ", word: "ぐみ", emoji: "🍬" },
+    { kana: "げ", word: "げた", emoji: "🩴" },
+    { kana: "ご", word: "ごりら", emoji: "🦍" },
+  ],
+  [
+    { kana: "ざ", word: "ざるそば", emoji: "🍜" },
+    { kana: "じ", word: "じてんしゃ", emoji: "🚲" },
+    { kana: "ず", word: "ずぼん", emoji: "👖" },
+    { kana: "ぜ", word: "ぜんまい", emoji: "🌀" },
+    { kana: "ぞ", word: "ぞう", emoji: "🐘" },
+  ],
+  [
+    { kana: "だ", word: "だるま", emoji: "🎎" },
+    { kana: "ぢ", word: "はなぢ", emoji: "🩹" },
+    { kana: "づ", word: "つづく", emoji: "🔁" },
+    { kana: "で", word: "でんわ", emoji: "☎️" },
+    { kana: "ど", word: "どあ", emoji: "🚪" },
+  ],
+  [
+    { kana: "ば", word: "ばなな", emoji: "🍌" },
+    { kana: "び", word: "びわ", emoji: "🍐" },
+    { kana: "ぶ", word: "ぶどう", emoji: "🍇" },
+    { kana: "べ", word: "べる", emoji: "🔔" },
+    { kana: "ぼ", word: "ぼうし", emoji: "👒" },
+  ],
+  [
+    { kana: "ぱ", word: "ぱんだ", emoji: "🐼" },
+    { kana: "ぴ", word: "ぴあの", emoji: "🎹" },
+    { kana: "ぷ", word: "ぷりん", emoji: "🍮" },
+    { kana: "ぺ", word: "ぺんぎん", emoji: "🐧" },
+    { kana: "ぽ", word: "ぽすと", emoji: "📮" },
+  ],
+];
+
+const smallKanaRows = [
+  [
+    { kana: "ぁ", word: "ふぁいる", emoji: "📁" },
+    { kana: "ぃ", word: "うぃんく", emoji: "😉" },
+    { kana: "ぅ", word: "うぅん", emoji: "🤔" },
+    { kana: "ぇ", word: "うぇぶ", emoji: "🌐" },
+    { kana: "ぉ", word: "ふぉと", emoji: "📷" },
+  ],
+  [
+    { kana: "ゃ", word: "きゃべつ", emoji: "🥬" },
+    { kana: "ゅ", word: "ちゅうりっぷ", emoji: "🌷" },
+    { kana: "ょ", word: "りょこう", emoji: "🧳" },
+  ],
+  [
+    { kana: "っ", word: "きって", emoji: "✉️" },
+  ],
+];
+
+const kanaTableGroups = [
+  { title: "あ〜ん", rows: kanaRows },
+  { title: "だくおん・はんだくおん", rows: voicedKanaRows },
+  { title: "ちいさい もじ", rows: smallKanaRows },
+];
+const kana = kanaTableGroups.flatMap((group) => group.rows.flat());
 const kanaByCharacter = new Map(kana.map((item) => [item.kana, item]));
 const quizWords = kana.filter(({ word }) => {
   const characters = Array.from(word);
@@ -98,6 +159,7 @@ const nextQuestionButton = document.querySelector("#next-question");
 const questionCount = document.querySelector("#question-count");
 const quizProgress = document.querySelector("#quiz-progress-bar");
 const scoreDisplay = document.querySelector("#score");
+const kanaCount = document.querySelector("#kana-count");
 
 let selectedIndex = 0;
 let quizQuestions = [];
@@ -120,23 +182,37 @@ function speak(text) {
 }
 
 function renderKanaGrid() {
-  kanaRows.forEach((row) => {
-    const rowElement = document.createElement("div");
-    const isSpacedRow = row[0].kana === "や" || row[0].kana === "わ";
-    rowElement.className = `kana-row${row.length < 5 ? " is-short" : ""}${isSpacedRow ? " is-spaced" : ""}`;
+  kanaCount.textContent = `${kana.length} もじ`;
+  kanaTableGroups.forEach((group) => {
+    const groupElement = document.createElement("section");
+    groupElement.className = "kana-group";
+    const heading = document.createElement("h3");
+    heading.className = "kana-group-title";
+    heading.textContent = group.title;
+    const rowsElement = document.createElement("div");
+    rowsElement.className = "kana-group-rows";
 
-    row.forEach((item) => {
-      const button = document.createElement("button");
-      button.className = "kana-button";
-      button.type = "button";
-      button.textContent = item.kana;
-      button.dataset.kana = item.kana;
-      button.setAttribute("aria-label", `${item.kana}、${item.word}`);
-      button.setAttribute("aria-pressed", "false");
-      rowElement.append(button);
+    group.rows.forEach((row) => {
+      const rowElement = document.createElement("div");
+      const isSpacedRow = row[0].kana === "や" || row[0].kana === "わ" || row[0].kana === "ゃ";
+      rowElement.className = `kana-row${row.length < 5 ? " is-short" : ""}${isSpacedRow ? " is-spaced" : ""}`;
+
+      row.forEach((item) => {
+        const button = document.createElement("button");
+        button.className = "kana-button";
+        button.type = "button";
+        button.textContent = item.kana;
+        button.dataset.kana = item.kana;
+        button.setAttribute("aria-label", `${item.kana}、${item.word}`);
+        button.setAttribute("aria-pressed", "false");
+        rowElement.append(button);
+      });
+
+      rowsElement.append(rowElement);
     });
 
-    kanaGrid.append(rowElement);
+    groupElement.append(heading, rowsElement);
+    kanaGrid.append(groupElement);
   });
 }
 

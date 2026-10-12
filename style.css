@@ -223,8 +223,23 @@ a:focus-visible {
 .kana-grid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 20px;
   margin-top: 20px;
+}
+
+.kana-group-title {
+  margin: 0 0 8px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #f0ebdf;
+  color: #7562d8;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.kana-group-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .kana-row {
