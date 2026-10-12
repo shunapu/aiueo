@@ -240,6 +240,7 @@ kanaGrid.addEventListener("click", (event) => {
   if (!button) return;
   const index = kana.findIndex((item) => item.kana === button.dataset.kana);
   selectKana(index);
+  speak(button.dataset.kana);
 });
 
 learnModeButton.addEventListener("click", () => setMode("learn"));
