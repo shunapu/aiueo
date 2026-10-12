@@ -107,8 +107,8 @@ function speak(text) {
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "ja-JP";
-  utterance.rate = 0.85;
-  utterance.pitch = 1.1;
+  utterance.rate = 0.9;
+  utterance.pitch = 1.4;
   window.speechSynthesis.speak(utterance);
 }
 
