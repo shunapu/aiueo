@@ -155,6 +155,7 @@ const nextButton = document.querySelector("#next-button");
 const questionEmoji = document.querySelector("#question-emoji");
 const wordSlots = document.querySelector("#word-slots");
 const quizFeedback = document.querySelector("#quiz-feedback");
+const showAnswerButton = document.querySelector("#show-answer");
 const nextQuestionButton = document.querySelector("#next-question");
 const questionCount = document.querySelector("#question-count");
 const quizProgress = document.querySelector("#quiz-progress-bar");
@@ -279,6 +280,7 @@ function renderQuestion() {
   quizProgress.style.width = `${((quizIndex + 1) / quizQuestions.length) * 100}%`;
   quizFeedback.textContent = "えをみて、ひらがなを じゅんばんに おしてね！";
   quizFeedback.className = "quiz-feedback";
+  showAnswerButton.classList.remove("is-hidden");
   nextQuestionButton.classList.add("is-hidden");
   nextQuestionButton.textContent = "つぎの もんだいへ →";
   wordSlots.classList.remove("is-hidden");
@@ -298,6 +300,7 @@ function renderQuestion() {
 
 function finishQuiz() {
   quizFinished = true;
+  showAnswerButton.classList.add("is-hidden");
   questionEmoji.textContent = "🎉";
   wordSlots.replaceChildren();
   wordSlots.classList.add("is-hidden");
@@ -372,6 +375,7 @@ function handleQuizKana(button) {
   answered = true;
   score += 1;
   scoreDisplay.textContent = score;
+  showAnswerButton.classList.add("is-hidden");
   quizFeedback.textContent = "せいかい！ すごいね！ 🎉";
   quizFeedback.className = "quiz-feedback is-correct";
   nextQuestionButton.classList.remove("is-hidden");
@@ -380,8 +384,26 @@ function handleQuizKana(button) {
   }
 }
 
+function showQuizAnswer() {
+  if (answered || quizFinished) return;
+
+  const answer = Array.from(quizQuestions[quizIndex].word);
+  answer.forEach((character, index) => {
+    wordSlots.children[index].textContent = character;
+  });
+  answered = true;
+  showAnswerButton.classList.add("is-hidden");
+  quizFeedback.textContent = `こたえは「${quizQuestions[quizIndex].word}」だよ`;
+  quizFeedback.className = "quiz-feedback";
+  nextQuestionButton.classList.remove("is-hidden");
+  if (quizIndex === quizQuestions.length - 1) {
+    nextQuestionButton.textContent = "けっかを みる →";
+  }
+}
+
 learnModeButton.addEventListener("click", () => setMode("learn"));
 quizModeButton.addEventListener("click", () => setMode("quiz"));
+showAnswerButton.addEventListener("click", showQuizAnswer);
 previousButton.addEventListener("click", () => selectKana(selectedIndex - 1));
 nextButton.addEventListener("click", () => selectKana(selectedIndex + 1));
 speakButton.addEventListener("click", () => {

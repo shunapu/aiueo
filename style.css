@@ -607,8 +607,25 @@ a:focus-visible {
   font-weight: 900;
 }
 
+.answer-button {
+  min-height: 42px;
+  margin-top: 8px;
+  padding: 0 20px;
+  border: 1px solid #e6e0f4;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--purple-dark);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+}
+
 .next-question:hover {
   background: var(--purple-dark);
+}
+
+.answer-button:hover {
+  background: #f6f3ff;
 }
 
 .is-hidden {
