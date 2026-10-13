@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#fff9ed">
+  <meta name="theme-color" content="#f1faff">
   <meta name="description" content="ひらがなを見て、聞いて、クイズで楽しくおぼえよう！">
   <title>あいうえおの ぼうけん</title>
   <link rel="stylesheet" href="style.css">
@@ -32,9 +32,18 @@
       <p class="intro-note" id="intro-note"><span aria-hidden="true">👆</span> もじを おすと おとが きけるよ</p>
     </section>
 
-    <div class="script-switch" role="group" aria-label="もじのしゅるい">
-      <button class="script-button is-active" id="hiragana-mode" type="button" aria-pressed="true">ひらがな</button>
-      <button class="script-button" id="katakana-mode" type="button" aria-pressed="false">カタカナ</button>
+    <div class="view-options">
+      <div class="script-switch" role="group" aria-label="もじのしゅるい">
+        <button class="script-button is-active" id="hiragana-mode" type="button" aria-pressed="true">ひらがな</button>
+        <button class="script-button" id="katakana-mode" type="button" aria-pressed="false">カタカナ</button>
+      </div>
+      <div class="theme-options">
+        <span class="theme-label">はいけい</span>
+        <div class="theme-switch" role="group" aria-label="はいけいのいろ">
+          <button class="theme-button is-active" id="blue-theme" type="button" aria-pressed="true">☁️ あお</button>
+          <button class="theme-button" id="pink-theme" type="button" aria-pressed="false">🌸 ピンク</button>
+        </div>
+      </div>
     </div>
 
     <section class="quiz-view is-hidden" id="quiz-view" aria-label="ひらがなクイズ">

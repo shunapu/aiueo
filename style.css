@@ -29,6 +29,14 @@ body {
     #f1faff;
 }
 
+body.is-pink-theme {
+  background:
+    radial-gradient(ellipse at 8% 12%, rgb(255 215 101 / 24%), transparent 25rem),
+    radial-gradient(ellipse at 92% 38%, rgb(255 153 177 / 28%), transparent 25rem),
+    radial-gradient(ellipse at 50% 100%, rgb(228 174 239 / 17%), transparent 32rem),
+    #fff2f7;
+}
+
 button,
 a {
   font: inherit;
@@ -183,7 +191,7 @@ a:focus-visible {
   display: flex;
   width: fit-content;
   gap: 4px;
-  margin: 0 0 12px;
+  margin: 0;
   padding: 4px;
   border: 2px solid #fff;
   border-radius: 16px;
@@ -204,6 +212,55 @@ a:focus-visible {
 }
 
 .script-button.is-active {
+  background: #fff;
+  box-shadow: 0 2px 0 #d6cafa, 0 3px 8px rgb(64 73 111 / 9%);
+  color: #563db5;
+}
+
+.view-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.theme-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-label {
+  color: #607991;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.theme-switch {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 2px solid #fff;
+  border-radius: 16px;
+  background: #e4f3fb;
+  box-shadow: 0 3px 0 #d3e8f2;
+}
+
+.theme-button {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: #60758d;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.theme-button.is-active {
   background: #fff;
   box-shadow: 0 2px 0 #d6cafa, 0 3px 8px rgb(64 73 111 / 9%);
   color: #563db5;
@@ -717,7 +774,7 @@ a:focus-visible {
     text-align: right;
   }
 
-  .script-switch {
+  .view-options {
     margin-bottom: 9px;
   }
 

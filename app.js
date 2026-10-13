@@ -142,6 +142,9 @@ const rhythmModeButton = document.querySelector("#rhythm-mode");
 const quizModeButton = document.querySelector("#quiz-mode");
 const hiraganaModeButton = document.querySelector("#hiragana-mode");
 const katakanaModeButton = document.querySelector("#katakana-mode");
+const blueThemeButton = document.querySelector("#blue-theme");
+const pinkThemeButton = document.querySelector("#pink-theme");
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 const title = document.querySelector("#page-title");
 const eyebrow = document.querySelector("#eyebrow");
 const introNote = document.querySelector("#intro-note");
@@ -229,6 +232,16 @@ function updateScript(script) {
   selectedIndex = 0;
   if (currentMode === "quiz") startQuiz();
   else selectKana(selectedIndex);
+}
+
+function setTheme(theme) {
+  const isPink = theme === "pink";
+  document.body.classList.toggle("is-pink-theme", isPink);
+  blueThemeButton.classList.toggle("is-active", !isPink);
+  pinkThemeButton.classList.toggle("is-active", isPink);
+  blueThemeButton.setAttribute("aria-pressed", String(!isPink));
+  pinkThemeButton.setAttribute("aria-pressed", String(isPink));
+  themeColorMeta.content = isPink ? "#fff2f7" : "#f1faff";
 }
 
 function speak(text, rate = 0.9) {
@@ -499,6 +512,8 @@ rhythmModeButton.addEventListener("click", () => setMode("rhythm"));
 quizModeButton.addEventListener("click", () => setMode("quiz"));
 hiraganaModeButton.addEventListener("click", () => updateScript("hiragana"));
 katakanaModeButton.addEventListener("click", () => updateScript("katakana"));
+blueThemeButton.addEventListener("click", () => setTheme("blue"));
+pinkThemeButton.addEventListener("click", () => setTheme("pink"));
 showAnswerButton.addEventListener("click", showQuizAnswer);
 previousButton.addEventListener("click", () => selectKana(selectedIndex - 1));
 nextButton.addEventListener("click", () => selectKana(selectedIndex + 1));
