@@ -137,8 +137,15 @@ const toKatakana = (text) => Array.from(text, (character) => {
 const appShell = document.querySelector(".app-shell");
 const kanaGrid = document.querySelector("#kana-grid");
 const quizView = document.querySelector("#quiz-view");
+const traceView = document.querySelector("#trace-view");
+const traceCanvas = document.querySelector("#trace-canvas");
+const traceContext = traceCanvas.getContext("2d");
+const traceGuide = document.querySelector("#trace-guide");
+const tracePosition = document.querySelector("#trace-position");
+const traceWord = document.querySelector("#trace-word");
 const learnModeButton = document.querySelector("#learn-mode");
 const rhythmModeButton = document.querySelector("#rhythm-mode");
+const traceModeButton = document.querySelector("#trace-mode");
 const quizModeButton = document.querySelector("#quiz-mode");
 const hiraganaModeButton = document.querySelector("#hiragana-mode");
 const katakanaModeButton = document.querySelector("#katakana-mode");
@@ -185,6 +192,7 @@ let score = 0;
 let answered = false;
 let quizFinished = false;
 let currentAnswerIndex = 0;
+let isDrawing = false;
 
 function makeScriptGroups(script) {
   if (script === "hiragana") return hiraganaTableGroups;
@@ -234,6 +242,54 @@ function updateScript(script) {
   else selectKana(selectedIndex);
 }
 
+function resizeTraceCanvas() {
+  const bounds = traceCanvas.getBoundingClientRect();
+  const pixelRatio = window.devicePixelRatio || 1;
+  traceCanvas.width = Math.round(bounds.width * pixelRatio);
+  traceCanvas.height = Math.round(bounds.height * pixelRatio);
+  traceContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  clearTraceCanvas();
+}
+
+function clearTraceCanvas() {
+  isDrawing = false;
+  const bounds = traceCanvas.getBoundingClientRect();
+  traceContext.clearRect(0, 0, bounds.width, bounds.height);
+}
+
+function updateTraceItem(item) {
+  traceGuide.textContent = item.kana;
+  traceCanvas.setAttribute("aria-label", `${item.kana}をなぞるかきこみスペース`);
+  tracePosition.textContent = `${selectedIndex + 1} / ${kana.length}`;
+  traceWord.textContent = `${item.emoji} 「${item.kana}」の ことば：${item.word}`;
+}
+
+function startTrace(event) {
+  if (event.button !== undefined && event.button !== 0) return;
+  event.preventDefault();
+  isDrawing = true;
+  traceCanvas.setPointerCapture(event.pointerId);
+  const bounds = traceCanvas.getBoundingClientRect();
+  traceContext.beginPath();
+  traceContext.moveTo(event.clientX - bounds.left, event.clientY - bounds.top);
+  traceContext.lineCap = "round";
+  traceContext.lineJoin = "round";
+  traceContext.lineWidth = 12;
+  traceContext.strokeStyle = "#7659d9";
+}
+
+function continueTrace(event) {
+  if (!isDrawing) return;
+  const bounds = traceCanvas.getBoundingClientRect();
+  traceContext.lineTo(event.clientX - bounds.left, event.clientY - bounds.top);
+  traceContext.stroke();
+}
+
+function stopTrace() {
+  isDrawing = false;
+  traceContext.closePath();
+}
+
 function setTheme(theme) {
   const isPink = theme === "pink";
   document.body.classList.toggle("is-pink-theme", isPink);
@@ -270,16 +326,22 @@ function updateModeCopy() {
     ? "クイズに チャレンジ！"
     : currentMode === "rhythm"
       ? "リズムに のって おぼえよう！"
-      : "もじを えらんでみよう！";
+      : currentMode === "trace"
+        ? "もじを なぞってみよう！"
+        : "もじを えらんでみよう！";
   eyebrow.textContent = currentMode === "quiz"
     ? "えをみて ことばを つくろう"
     : currentMode === "rhythm"
       ? `${scriptName}で リズムあそび`
+      : currentMode === "trace"
+        ? `${scriptName}を かいてみよう`
       : `${scriptName}を おぼえよう`;
-  introNoteIcon.textContent = currentMode === "rhythm" ? "🥁" : "👆";
+  introNoteIcon.textContent = currentMode === "rhythm" ? "🥁" : currentMode === "trace" ? "✍️" : "👆";
   introNote.lastChild.textContent = currentMode === "rhythm"
     ? " もじを おすと リズムで きけるよ"
-    : " もじを おすと おとが きけるよ";
+    : currentMode === "trace"
+      ? " マウスや ゆびで なぞってね"
+      : " もじを おすと おとが きけるよ";
 }
 
 function renderKanaGrid() {
@@ -320,6 +382,8 @@ function renderKanaGrid() {
 function selectKana(index) {
   selectedIndex = (index + kana.length) % kana.length;
   const item = kana[selectedIndex];
+  updateTraceItem(item);
+  clearTraceCanvas();
   const isParticle = item.kana === "を";
   const isEndingSound = item.kana === "ん";
 
@@ -422,15 +486,20 @@ function setMode(mode) {
   const isQuiz = mode === "quiz";
   currentMode = mode;
   appShell.classList.toggle("is-quiz", isQuiz);
+  appShell.classList.toggle("is-tracing", mode === "trace");
   quizView.classList.toggle("is-hidden", !isQuiz);
+  traceView.classList.toggle("is-hidden", mode !== "trace");
   learnModeButton.classList.toggle("is-active", mode === "learn");
   rhythmModeButton.classList.toggle("is-active", mode === "rhythm");
+  traceModeButton.classList.toggle("is-active", mode === "trace");
   quizModeButton.classList.toggle("is-active", isQuiz);
   learnModeButton.setAttribute("aria-pressed", String(mode === "learn"));
   rhythmModeButton.setAttribute("aria-pressed", String(mode === "rhythm"));
+  traceModeButton.setAttribute("aria-pressed", String(mode === "trace"));
   quizModeButton.setAttribute("aria-pressed", String(isQuiz));
   updateModeCopy();
 
+  if (mode === "trace") resizeTraceCanvas();
   if (!isQuiz) {
     selectKana(selectedIndex);
   } else {
@@ -438,6 +507,7 @@ function setMode(mode) {
   }
 }
 
+resizeTraceCanvas();
 updateScript("hiragana");
 
 kanaGrid.addEventListener("click", (event) => {
@@ -450,7 +520,7 @@ kanaGrid.addEventListener("click", (event) => {
 
   const index = kana.findIndex((item) => item.kana === button.dataset.kana);
   selectKana(index);
-  speakKanaItem(kana[index]);
+  if (currentMode !== "trace") speakKanaItem(kana[index]);
 });
 
 function handleQuizKana(button) {
@@ -509,11 +579,21 @@ function showQuizAnswer() {
 
 learnModeButton.addEventListener("click", () => setMode("learn"));
 rhythmModeButton.addEventListener("click", () => setMode("rhythm"));
+traceModeButton.addEventListener("click", () => setMode("trace"));
 quizModeButton.addEventListener("click", () => setMode("quiz"));
 hiraganaModeButton.addEventListener("click", () => updateScript("hiragana"));
 katakanaModeButton.addEventListener("click", () => updateScript("katakana"));
 blueThemeButton.addEventListener("click", () => setTheme("blue"));
 pinkThemeButton.addEventListener("click", () => setTheme("pink"));
+document.querySelector("#trace-previous").addEventListener("click", () => selectKana(selectedIndex - 1));
+document.querySelector("#trace-next").addEventListener("click", () => selectKana(selectedIndex + 1));
+document.querySelector("#trace-clear").addEventListener("click", clearTraceCanvas);
+document.querySelector("#trace-speak").addEventListener("click", () => speakKanaItem(kana[selectedIndex], true));
+traceCanvas.addEventListener("pointerdown", startTrace);
+traceCanvas.addEventListener("pointermove", continueTrace);
+traceCanvas.addEventListener("pointerup", stopTrace);
+traceCanvas.addEventListener("pointercancel", stopTrace);
+window.addEventListener("resize", resizeTraceCanvas);
 showAnswerButton.addEventListener("click", showQuizAnswer);
 previousButton.addEventListener("click", () => selectKana(selectedIndex - 1));
 nextButton.addEventListener("click", () => selectKana(selectedIndex + 1));

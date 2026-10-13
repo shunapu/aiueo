@@ -19,6 +19,7 @@
       <nav class="mode-switch" aria-label="あそびかた">
         <button class="mode-button is-active" id="learn-mode" type="button" aria-pressed="true">📖 おぼえる</button>
         <button class="mode-button" id="rhythm-mode" type="button" aria-pressed="false">🥁 リズム</button>
+        <button class="mode-button" id="trace-mode" type="button" aria-pressed="false">✍️ なぞる</button>
         <button class="mode-button" id="quiz-mode" type="button" aria-pressed="false">⭐ クイズ</button>
       </nav>
       <div class="top-decoration" aria-hidden="true"><span>✦</span><span>●</span><span>✦</span></div>
@@ -67,6 +68,34 @@
         <p class="quiz-feedback" id="quiz-feedback" aria-live="polite">えをみて、ひらがなを じゅんばんに おしてね！</p>
         <button class="answer-button" id="show-answer" type="button">こたえをみる</button>
         <button class="next-question is-hidden" id="next-question" type="button">つぎの もんだいへ →</button>
+      </div>
+    </section>
+
+    <section class="trace-view is-hidden" id="trace-view" aria-label="もじをなぞる">
+      <div class="trace-card panel">
+        <div class="trace-heading">
+          <div>
+            <p class="section-kicker">かいて みよう</p>
+            <h2>もじを なぞってみよう！</h2>
+          </div>
+          <div class="trace-navigation" aria-label="なぞるもじをえらぶ">
+            <button class="round-button" id="trace-previous" type="button" aria-label="ひとつまえのもじ">←</button>
+            <span id="trace-position">1 / 80</span>
+            <button class="round-button" id="trace-next" type="button" aria-label="つぎのもじ">→</button>
+          </div>
+        </div>
+        <p class="trace-instructions">うすい もじの うえを、マウスや ゆびで なぞってね！ したの ひょうから もじを えらべるよ。</p>
+        <div class="trace-pad">
+          <span class="trace-guide" id="trace-guide" aria-hidden="true">あ</span>
+          <canvas id="trace-canvas" aria-label="もじをなぞるかきこみスペース"></canvas>
+        </div>
+        <div class="trace-actions">
+          <span class="trace-word" id="trace-word">🐜 「あ」の ことば：あり</span>
+          <div class="trace-buttons">
+            <button class="answer-button" id="trace-speak" type="button">🔊 おとをきく</button>
+            <button class="next-question" id="trace-clear" type="button">けす ↻</button>
+          </div>
+        </div>
       </div>
     </section>
 
