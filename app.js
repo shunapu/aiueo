@@ -140,6 +140,7 @@ const quizView = document.querySelector("#quiz-view");
 const traceView = document.querySelector("#trace-view");
 const traceCanvas = document.querySelector("#trace-canvas");
 const traceContext = traceCanvas.getContext("2d");
+const penColors = document.querySelector(".pen-colors");
 const traceGuide = document.querySelector("#trace-guide");
 const tracePosition = document.querySelector("#trace-position");
 const traceWord = document.querySelector("#trace-word");
@@ -193,6 +194,7 @@ let answered = false;
 let quizFinished = false;
 let currentAnswerIndex = 0;
 let isDrawing = false;
+let penColor = "#e64b4b";
 
 function makeScriptGroups(script) {
   if (script === "hiragana") return hiraganaTableGroups;
@@ -275,7 +277,7 @@ function startTrace(event) {
   traceContext.lineCap = "round";
   traceContext.lineJoin = "round";
   traceContext.lineWidth = 12;
-  traceContext.strokeStyle = "#7659d9";
+  traceContext.strokeStyle = penColor;
 }
 
 function continueTrace(event) {
@@ -593,6 +595,17 @@ traceCanvas.addEventListener("pointerdown", startTrace);
 traceCanvas.addEventListener("pointermove", continueTrace);
 traceCanvas.addEventListener("pointerup", stopTrace);
 traceCanvas.addEventListener("pointercancel", stopTrace);
+penColors.addEventListener("click", (event) => {
+  const button = event.target.closest(".pen-color");
+  if (!button) return;
+
+  penColor = button.dataset.color;
+  penColors.querySelectorAll(".pen-color").forEach((colorButton) => {
+    const isSelected = colorButton === button;
+    colorButton.classList.toggle("is-active", isSelected);
+    colorButton.setAttribute("aria-pressed", String(isSelected));
+  });
+});
 window.addEventListener("resize", resizeTraceCanvas);
 showAnswerButton.addEventListener("click", showQuizAnswer);
 previousButton.addEventListener("click", () => selectKana(selectedIndex - 1));
